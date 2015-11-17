@@ -15,7 +15,12 @@ public class SicASM {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        // Testing
+        Hashtable H = new Hashtable(0);
+        H.setHash("abc", "AF");
+        System.out.println(H.getOpcode("abc"));
+        System.out.println(H.getOpcode("wd"));
     }
     
 }
