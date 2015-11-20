@@ -18,15 +18,18 @@ public class SRCformat {
     private String OPCode;
     private String Operand;
     private boolean errorFlag;
+    private boolean check;
     
-    SRCformat (String Instruction){
+    public SRCformat (String Instruction){
         this.Instruction = Instruction;
+        splitInstruction();
+        check = checkFormat();
         errorFlag = false;
     }
     private boolean checkFormat(){
         return !(Instruction.charAt(8) != ' ' || Instruction.charAt(15) != ' ' || Instruction.charAt(16) != ' ');
     }
-    public void splitInstruction(){
+    private void splitInstruction(){
         String label = Instruction.substring(0, 8);
         String opcode = Instruction.substring(9, 15);
         String operand;
@@ -35,7 +38,7 @@ public class SRCformat {
         else
             operand = trim(Instruction.substring(17, 35));
         
-        if (label.startsWith(" ") || opcode.startsWith(" ") || operand.startsWith(" "))
+        if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" "))
             errorFlag = true;
         else{
             Label = trim(label);
