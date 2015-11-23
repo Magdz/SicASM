@@ -16,11 +16,11 @@ public class SicASM {
      */
     public static void main(String[] args) {
         
-        // Testing
-        Hashtable H = new Hashtable(0);
-        H.setHash("abc", "AF");
-        System.out.println(H.getOpcode("abc"));
-        System.out.println(H.getOpcode("wd"));
+        ReadWriteFile rw = new ReadWriteFile();
+        rw.setFileName("love.txt");
+        /*String s = rw.readFile();
+        System.out.println(s);*/
+        rw.writeFile("Basma Kadry Osman/n96/ncollege engineering/nHAPPY");
     }
     
 }

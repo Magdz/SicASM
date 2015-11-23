@@ -34,9 +34,9 @@ public class SRCformat {
         String opcode = Instruction.substring(9, 15);
         String operand;
         if (Instruction.length() <= 35)
-            operand = trim(Instruction.substring(17, Instruction.length()));
+            operand = Instruction.substring(17, Instruction.length());
         else
-            operand = trim(Instruction.substring(17, 35));
+            operand = Instruction.substring(17, 35);
         
         if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" "))
             errorFlag = true;
