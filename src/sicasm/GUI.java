@@ -44,7 +44,8 @@ public class GUI extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         SRCText = new javax.swing.JTextArea();
-        ListPanel = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ListText = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -52,6 +53,7 @@ public class GUI extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("SicASM Editor v1.0");
 
         ToolBar.setFloatable(false);
         ToolBar.setRollover(true);
@@ -96,7 +98,7 @@ public class GUI extends javax.swing.JFrame {
         ObjectPanel.setLayout(ObjectPanelLayout);
         ObjectPanelLayout.setHorizontalGroup(
             ObjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
         );
         ObjectPanelLayout.setVerticalGroup(
             ObjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,11 +119,19 @@ public class GUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Source Code", jScrollPane1);
 
+        ListText.setEditable(false);
+        ListText.setColumns(20);
+        ListText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        ListText.setRows(5);
+        jScrollPane4.setViewportView(ListText);
+
+        jTabbedPane1.addTab("List File", jScrollPane4);
+
         javax.swing.GroupLayout SRCPanelLayout = new javax.swing.GroupLayout(SRCPanel);
         SRCPanel.setLayout(SRCPanelLayout);
         SRCPanelLayout.setHorizontalGroup(
             SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 421, Short.MAX_VALUE)
+            .addGap(0, 720, Short.MAX_VALUE)
             .addGroup(SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE))
         );
@@ -132,17 +142,6 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout ListPanelLayout = new javax.swing.GroupLayout(ListPanel);
-        ListPanel.setLayout(ListPanelLayout);
-        ListPanelLayout.setHorizontalGroup(
-            ListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        ListPanelLayout.setVerticalGroup(
-            ListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout LayeredPaneLayout = new javax.swing.GroupLayout(LayeredPane);
         LayeredPane.setLayout(LayeredPaneLayout);
         LayeredPaneLayout.setHorizontalGroup(
@@ -150,38 +149,27 @@ public class GUI extends javax.swing.JFrame {
             .addComponent(ObjectPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(SRCPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(LayeredPaneLayout.createSequentialGroup()
-                    .addGap(311, 311, 311)
-                    .addComponent(ListPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         LayeredPaneLayout.setVerticalGroup(
             LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LayeredPaneLayout.createSequentialGroup()
-                .addContainerGap(250, Short.MAX_VALUE)
+            .addGroup(LayeredPaneLayout.createSequentialGroup()
+                .addContainerGap(156, Short.MAX_VALUE)
                 .addComponent(ObjectPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(SRCPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(LayeredPaneLayout.createSequentialGroup()
-                    .addGap(161, 161, 161)
-                    .addComponent(ListPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(149, Short.MAX_VALUE)))
         );
         LayeredPane.setLayer(ObjectPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ObjectPanel.getAccessibleContext().setAccessibleParent(LayeredPane);
         LayeredPane.setLayer(SRCPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         SRCPanel.getAccessibleContext().setAccessibleParent(LayeredPane);
-        LayeredPane.setLayer(ListPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout MainPanelLayout = new javax.swing.GroupLayout(MainPanel);
         MainPanel.setLayout(MainPanelLayout);
         MainPanelLayout.setHorizontalGroup(
             MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(ToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(LayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+            .addComponent(LayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 694, Short.MAX_VALUE)
             .addComponent(TabBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         MainPanelLayout.setVerticalGroup(
@@ -189,7 +177,7 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
                 .addComponent(ToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(LayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                .addComponent(LayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TabBar, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -244,8 +232,9 @@ public class GUI extends javax.swing.JFrame {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 try{
                     //UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
-                    UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+                    //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
                     //UIManager.setLookAndFeel("com.jtattoo.plaf.aero.AeroLookAndFeel");
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                 }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex){
                     if ("Nimbus".equals(info.getName())) {
                         javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -271,7 +260,7 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane LayeredPane;
-    private javax.swing.JPanel ListPanel;
+    private javax.swing.JTextArea ListText;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JTextArea ObjText;
     private javax.swing.JButton ObjectButton;
@@ -287,6 +276,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
