@@ -12,13 +12,54 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author Ahmed
  */
-public class GUI extends javax.swing.JFrame {
+public final class GUI extends javax.swing.JFrame {
 
     /**
      * Creates new form GUI
      */
     public GUI() {
+        Theme();
         initComponents();
+    }
+
+    private void Theme(){
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                try{
+                    //UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
+                    //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+                    //UIManager.setLookAndFeel("com.jtattoo.plaf.aero.AeroLookAndFeel");
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex){
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        
+        //</editor-fold>
+    }
+
+    public void setListText(String ListText) {
+        this.ListText.setText(ListText);
+    }
+
+    public void setObjText(String ObjText) {
+        this.ObjText.setText(ObjText);
+    }
+
+    public void setSRCText(String SRCText) {
+        this.SRCText.setText(SRCText);
     }
 
     /**
@@ -32,7 +73,7 @@ public class GUI extends javax.swing.JFrame {
 
         MainPanel = new javax.swing.JPanel();
         ToolBar = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
+        RunButton = new javax.swing.JButton();
         TabBar = new javax.swing.JToolBar();
         ObjectButton = new javax.swing.JButton();
         LayeredPane = new javax.swing.JLayeredPane();
@@ -59,11 +100,16 @@ public class GUI extends javax.swing.JFrame {
         ToolBar.setRollover(true);
         ToolBar.setRequestFocusEnabled(false);
 
-        jButton1.setText("jButton1");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        ToolBar.add(jButton1);
+        RunButton.setText("Run");
+        RunButton.setFocusable(false);
+        RunButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        RunButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        RunButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RunButtonActionPerformed(evt);
+            }
+        });
+        ToolBar.add(RunButton);
 
         TabBar.setFloatable(false);
         TabBar.setRollover(true);
@@ -219,44 +265,9 @@ public class GUI extends javax.swing.JFrame {
         ObjectPanel.setVisible(!ObjectPanel.isVisible());
     }//GEN-LAST:event_ObjectButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                try{
-                    //UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
-                    //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-                    //UIManager.setLookAndFeel("com.jtattoo.plaf.aero.AeroLookAndFeel");
-                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex){
-                    if ("Nimbus".equals(info.getName())) {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new GUI().setVisible(true);
-            }
-        });
-    }
+    private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
+        SicASM.run(SRCText.getText());
+    }//GEN-LAST:event_RunButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane LayeredPane;
@@ -265,12 +276,12 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextArea ObjText;
     private javax.swing.JButton ObjectButton;
     private javax.swing.JPanel ObjectPanel;
+    private javax.swing.JButton RunButton;
     private javax.swing.JPanel SRCPanel;
     private javax.swing.JTextArea SRCText;
     private javax.swing.JMenuItem SaveAll;
     private javax.swing.JToolBar TabBar;
     private javax.swing.JToolBar ToolBar;
-    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
