@@ -14,14 +14,13 @@ import java.util.Vector;
 public class SicASM {
     
     private static GUI GUI;
-    private static Hashtable Optable;
-    private static Hashtable Symtable;
-    private static Vector<String> LOCCTR;
+    private static Hashtable OPTAB = new Hashtable(0);
+    private static Hashtable SYMTAB = new Hashtable();
+    private static int LOCCTR;
+    private static Vector<String> Address = new Vector();
     
     //Main Running Controller Function.
     private static void Controller(){
-        Optable = new Hashtable(0);
-        Symtable = new Hashtable();
         GUI = new GUI();
         GUI.setVisible(true);
     }
@@ -30,12 +29,31 @@ public class SicASM {
         
     }
     
-    private void LocatorCounter(String SRCText){
-        /*
-        * it is required to 
-        * 1- fill the LOCCTR with a list of the address of the lines
-        * 2- fill the Symtable with the labels and there addresses
-        */
+    private void Counter(String SRCText){
+        String lines [] = SRCText.split("\n");
+        for (String line: lines){
+            if (line.startsWith(".")){
+                Address.addElement("");
+                continue;
+            }
+            SRCformat instruction = new SRCformat(line);
+            if ((instruction.getOPCode()).equalsIgnoreCase("START")) {
+                LOCCTR = Integer.parseInt(instruction.getOperand(), 16);
+                Address.addElement(Integer.toHexString(LOCCTR));
+                continue;
+            }
+            Address.addElement(Integer.toHexString(LOCCTR));
+            if (!(instruction.getLabel()).equals(""))
+                SYMTAB.setHash(instruction.getLabel(), Address.lastElement());            
+            if ((instruction.getOPCode()).equalsIgnoreCase("BYTE"))
+                LOCCTR ++;
+            else if ((instruction.getOPCode()).equalsIgnoreCase("RESB"))
+                LOCCTR += Integer.parseInt(instruction.getOperand());
+            else if ((instruction.getOPCode()).equalsIgnoreCase("RESW"))
+                LOCCTR += 3*Integer.parseInt(instruction.getOperand());
+            else
+                LOCCTR += 3;
+        }
     }
     
     /**
@@ -43,9 +61,12 @@ public class SicASM {
      */
     public static void main(String[] args) {
         // Testing
-        String Hex = Integer.toHexString(15);
-        System.out.println(Hex);
-        LOCCTR.add(Hex);
+        ReadWriteFile file = new ReadWriteFile();
+        file.setFileName("Test.txt");
+        new SicASM().Counter(file.readFile());
+        for(String s: Address){
+            System.out.println(s);
+        }
         
         //Main Running Controller
         Controller();

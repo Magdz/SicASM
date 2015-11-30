@@ -28,7 +28,7 @@ public class Hashtable {
     }
     
     // Get the Opcode form the table for the operation
-    public String getOpcode(String operation){
+    public String getValue(String operation){
         int Hash = Hash1(operation);
         return Table[Hash];
     }

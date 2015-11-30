@@ -24,7 +24,6 @@ public class SRCformat {
         this.Instruction = Instruction;
         splitInstruction();
         check = checkFormat();
-        errorFlag = false;
     }
     private boolean checkFormat(){
         return !(Instruction.charAt(8) != ' ' || Instruction.charAt(15) != ' ' || Instruction.charAt(16) != ' ');
@@ -38,12 +37,13 @@ public class SRCformat {
         else
             operand = Instruction.substring(17, 35);
         
-        if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" "))
+        if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" ") && !operand.equals("                  "))
             errorFlag = true;
         else{
             Label = trim(label);
             OPCode = trim (opcode);
             Operand = trim (operand);
+            errorFlag = false;
         }
     }
 

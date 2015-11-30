@@ -1,0 +1,13 @@
+Test     Start   1000
+loop     lda     number
+first    add     one
+         sta     number
+second   lda     two
+         add     x
+.Testing Comment
+number   resw    1
+x        byte    1
+new      resb    20
+one      word    1
+two      word    1
+         end     1000

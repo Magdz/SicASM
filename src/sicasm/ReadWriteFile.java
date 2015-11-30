@@ -59,7 +59,7 @@ public class ReadWriteFile {
     public void writeFile(String text) {
         try{
             BufferedWriter buff = new BufferedWriter(new FileWriter(getFileName()));
-            String [] str = text.split("/n");
+            String [] str = text.split("\n");
             for(String s: str){
                 buff.write(s);
                 buff.newLine();
