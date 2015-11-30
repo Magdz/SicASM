@@ -14,10 +14,11 @@ import java.util.Vector;
 public class SicASM {
     
     private static GUI GUI;
-    private static Hashtable OPTAB = new Hashtable(0);
-    private static Hashtable SYMTAB = new Hashtable();
+    private static final Hashtable OPTAB = new Hashtable(0);
+    private static final Hashtable SYMTAB = new Hashtable();
     private static int LOCCTR;
-    private static Vector<String> Address = new Vector();
+    private static final Vector<String> Address = new Vector();
+    private static final Vector<String> ObjCode = new Vector();
     
     //Main Running Controller Function.
     private static void Controller(){
@@ -26,11 +27,12 @@ public class SicASM {
     }
 
     public static void run(String SRCText){
-        
+        String lines [] = SRCText.split("\n");
+        Counter(lines);
+        ObjFormat(lines);
     }
     
-    private void Counter(String SRCText){
-        String lines [] = SRCText.split("\n");
+    private static void Counter(String[] lines){
         for (String line: lines){
             if (line.startsWith(".")){
                 Address.addElement("");
@@ -56,6 +58,36 @@ public class SicASM {
         }
     }
     
+    private static void ObjFormat(String[] lines){
+        for(String line: lines){
+            if(line.startsWith(".")){
+                ObjCode.addElement("");
+                continue;
+            }
+            SRCformat instruction = new SRCformat(line);
+            if((instruction.getOPCode()).equalsIgnoreCase("START") || 
+                    (instruction.getOPCode()).equalsIgnoreCase("RESW") ||
+                    (instruction.getOPCode()).equalsIgnoreCase("RESB") ||
+                    (instruction.getOPCode()).equalsIgnoreCase("END")){
+                ObjCode.addElement("");
+            }else{
+                if(instruction.getOPCode().equalsIgnoreCase("WORD") || 
+                        instruction.getOPCode().equalsIgnoreCase("BYTE")){
+                    String zeros = "";
+                    for(int i=6; i>Integer.toHexString(Integer.parseInt(instruction.getOperand())).length(); --i)
+                        zeros+="0";
+                    ObjCode.addElement(zeros+Integer.toHexString(Integer.parseInt(instruction.getOperand())));
+                }else{
+                    if(instruction.getOperand().endsWith(",X") || instruction.getOperand().endsWith(",x")){
+                        String Modifed = Integer.toHexString(Integer.parseInt(SYMTAB.getValue(instruction.getOperand().substring(0, instruction.getOperand().length()-2)), 16) | (int)Math.pow(2, 15));
+                        ObjCode.addElement(OPTAB.getValue(instruction.getOPCode())+ Modifed);
+                    }else
+                        ObjCode.addElement(OPTAB.getValue(instruction.getOPCode())+SYMTAB.getValue(instruction.getOperand()));
+                }
+            }
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -63,8 +95,11 @@ public class SicASM {
         // Testing
         ReadWriteFile file = new ReadWriteFile();
         file.setFileName("Test.txt");
-        new SicASM().Counter(file.readFile());
+        run(file.readFile());
         for(String s: Address){
+            System.out.println(s);
+        }
+        for(String s: ObjCode){
             System.out.println(s);
         }
         
