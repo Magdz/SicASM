@@ -26,24 +26,41 @@ public class SRCformat {
         check = checkFormat();
     }
     private boolean checkFormat(){
-        return !(Instruction.charAt(8) != ' ' || Instruction.charAt(15) != ' ' || Instruction.charAt(16) != ' ');
+        if (Instruction.length() <= 15)
+            return !(Instruction.charAt(8) != ' ');
+        else
+            return !(Instruction.charAt(8) != ' ' || Instruction.charAt(15) != ' ' || Instruction.charAt(16) != ' ');
+
     }
     private void splitInstruction(){
-        String label = Instruction.substring(0, 8);
-        String opcode = Instruction.substring(9, 15);
-        String operand;
-        if (Instruction.length() <= 35)
-            operand = Instruction.substring(17, Instruction.length());
-        else
-            operand = Instruction.substring(17, 35);
-        
-        if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" ") && !operand.equals("                  "))
-            errorFlag = true;
+        String label = null;
+        String opcode = null;
+        String operand = null;
+        label = getInstruction().substring(0, 8);
+        if (getInstruction().length() <= 15){
+            opcode = getInstruction().substring(9, getInstruction().length());
+            if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") )
+                errorFlag = true;
+            else{
+                Label = trim(label);
+                OPCode = trim (opcode);
+                errorFlag = false;
+            }
+        }
         else{
-            Label = trim(label);
-            OPCode = trim (opcode);
-            Operand = trim (operand);
-            errorFlag = false;
+            opcode = getInstruction().substring(9, 15);
+            if (getInstruction().length() <= 35)
+                operand = getInstruction().substring(17, getInstruction().length());
+            else
+                operand = getInstruction().substring(17, 35);
+            if ((label.startsWith(" ") && !label.equals("        ")) || opcode.startsWith(" ") || operand.startsWith(" ") && !operand.equals("                  "))
+                errorFlag = true;
+            else{
+                Label = trim(label);
+                OPCode = trim (opcode);
+                Operand = trim (operand);
+                errorFlag = false;
+            }
         }
     }
 
@@ -73,6 +90,13 @@ public class SRCformat {
      */
     public boolean isErrorFlag() {
         return errorFlag;
+    }
+
+    /**
+     * @return the Instruction
+     */
+    public String getInstruction() {
+        return Instruction;
     }
     
     
