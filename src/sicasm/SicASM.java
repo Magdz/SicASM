@@ -19,6 +19,8 @@ public class SicASM {
     private static int LOCCTR;
     private static final Vector<String> Address = new Vector();
     private static final Vector<String> ObjCode = new Vector();
+    private static String ListFile = "";
+    private static String ObjProgram = "";
     
     //Main Running Controller Function.
     private static void Controller(){
@@ -30,6 +32,8 @@ public class SicASM {
         String lines [] = SRCText.split("\n");
         Counter(lines);
         ObjFormat(lines);
+        ListFile(lines);
+        ObjProgram(lines);
     }
     
     private static void Counter(String[] lines){
@@ -88,6 +92,16 @@ public class SicASM {
         }
     }
     
+    private static void ListFile(String[] lines){
+        for(int i=0; i<lines.length; ++i){
+            ListFile+=Address.get(i).toUpperCase()+'\t'+ObjCode.get(i).toUpperCase()+'\t'+lines[i]+'\n';
+        }
+    }
+    
+    private static void ObjProgram(String[] lines){
+        /* Create Object Program */
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -96,12 +110,7 @@ public class SicASM {
         ReadWriteFile file = new ReadWriteFile();
         file.setFileName("Test.txt");
         run(file.readFile());
-        for(String s: Address){
-            System.out.println(s);
-        }
-        for(String s: ObjCode){
-            System.out.println(s);
-        }
+        System.out.println(ListFile);
         
         //Main Running Controller
         Controller();
