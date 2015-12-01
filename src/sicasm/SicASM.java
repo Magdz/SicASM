@@ -77,10 +77,9 @@ public class SicASM {
             }else{
                 if(instruction.getOPCode().equalsIgnoreCase("WORD") || 
                         instruction.getOPCode().equalsIgnoreCase("BYTE")){
-                    String zeros = "";
-                    for(int i=6; i>Integer.toHexString(Integer.parseInt(instruction.getOperand())).length(); --i)
-                        zeros+="0";
-                    ObjCode.addElement(zeros+Integer.toHexString(Integer.parseInt(instruction.getOperand())));
+                    ObjCode.addElement(ZeroFormat(Integer.parseInt(instruction.getOperand()), 6));
+                }else if (instruction.getOperand() == null){
+                    ObjCode.addElement(OPTAB.getValue(instruction.getOPCode()) + "0000");
                 }else{
                     if(instruction.getOperand().endsWith(",X") || instruction.getOperand().endsWith(",x")){
                         String Modifed = Integer.toHexString(Integer.parseInt(SYMTAB.getValue(instruction.getOperand().substring(0, instruction.getOperand().length()-2)), 16) | (int)Math.pow(2, 15));
@@ -99,7 +98,54 @@ public class SicASM {
     }
     
     private static void ObjProgram(String[] lines){
-        /* Create Object Program */
+        SRCformat firstIns = new SRCformat (lines[0]);
+        String programName;
+        if ((firstIns.getLabel()).length() > 6){
+            programName = (firstIns.getLabel()).substring(0,7);
+        }else{
+            String spaces = "";
+            for(int i=6; i > firstIns.getLabel().length() ; --i)
+                spaces += " ";
+            programName = firstIns.getLabel() + spaces;
+        }
+        int Length = Integer.parseInt(Address.lastElement(), 16) - Integer.parseInt(Address.firstElement(), 16);
+        String programLength = ZeroFormat(Length, 6);
+        String startAddress = ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
+        ObjProgram += "H^" + programName + '^' + startAddress + '^' + programLength + '\n';
+        boolean loop = true;
+        int i = 1;
+        while (loop){
+            int recordLength = 0;
+            int startAddIndex = i;
+            String record = "";
+            for(int j=i; j<lines.length-1 ; j++){
+                if (ObjCode.elementAt(j).equals("")){
+                    i = j + 1;
+                    loop = true;
+                    break;
+                }else if ( recordLength == 60 ){
+                    i = j;
+                    loop = true;
+                    break;
+                }else{
+                    record += "^" + ObjCode.elementAt(j);
+                    recordLength += ObjCode.elementAt(j).length();
+                    loop = false;
+                }
+            }
+            if (!record.equals("")){
+                ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.elementAt(startAddIndex), 16), 6) 
+                        + '^' + ZeroFormat(recordLength/2, 2) + record + '\n';
+            }
+        }
+        ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6).toUpperCase();
+    }
+    
+    private static String ZeroFormat(int x, int length){
+        String zeros = "";
+        for(int i=length; i>Integer.toHexString(x).length(); --i)
+            zeros+="0";
+        return zeros + Integer.toHexString(x);
     }
     
     /**
@@ -111,7 +157,8 @@ public class SicASM {
         file.setFileName("Test.txt");
         run(file.readFile());
         System.out.println(ListFile);
-        
+        System.out.println(ObjProgram);
+
         //Main Running Controller
         Controller();
     }
