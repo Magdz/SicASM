@@ -14,10 +14,12 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public final class GUI extends javax.swing.JFrame {
 
+    ReadWriteFile file;
     /**
      * Creates new form GUI
      */
     public GUI() {
+        file = new ReadWriteFile();
         Theme();
         initComponents();
     }
@@ -74,21 +76,27 @@ public final class GUI extends javax.swing.JFrame {
         MainPanel = new javax.swing.JPanel();
         ToolBar = new javax.swing.JToolBar();
         RunButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        RunSave = new javax.swing.JButton();
         TabBar = new javax.swing.JToolBar();
         ObjectButton = new javax.swing.JButton();
         LayeredPane = new javax.swing.JLayeredPane();
         ObjectPanel = new javax.swing.JPanel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        ObjTab = new javax.swing.JTabbedPane();
+        ObjScroll = new javax.swing.JScrollPane();
         ObjText = new javax.swing.JTextArea();
         SRCPanel = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        Tabs = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         SRCText = new javax.swing.JTextArea();
         jScrollPane4 = new javax.swing.JScrollPane();
         ListText = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        LoadSRC = new javax.swing.JMenuItem();
+        SaveSRCCode = new javax.swing.JMenuItem();
+        SaveListFile = new javax.swing.JMenuItem();
+        SaveObjProgram = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         SaveAll = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -110,6 +118,18 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
         ToolBar.add(RunButton);
+        ToolBar.add(jSeparator2);
+
+        RunSave.setText("Run & Save All");
+        RunSave.setFocusable(false);
+        RunSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        RunSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        RunSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RunSaveActionPerformed(evt);
+            }
+        });
+        ToolBar.add(RunSave);
 
         TabBar.setFloatable(false);
         TabBar.setRollover(true);
@@ -136,42 +156,57 @@ public final class GUI extends javax.swing.JFrame {
         ObjText.setColumns(20);
         ObjText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         ObjText.setRows(5);
-        jScrollPane2.setViewportView(ObjText);
+        ObjScroll.setViewportView(ObjText);
 
-        jTabbedPane2.addTab("Object Code", jScrollPane2);
+        ObjTab.addTab("Object Code", ObjScroll);
 
         javax.swing.GroupLayout ObjectPanelLayout = new javax.swing.GroupLayout(ObjectPanel);
         ObjectPanel.setLayout(ObjectPanelLayout);
         ObjectPanelLayout.setHorizontalGroup(
             ObjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+            .addComponent(ObjTab, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
         );
         ObjectPanelLayout.setVerticalGroup(
             ObjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+            .addComponent(ObjTab, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Tabs.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Tabs.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabsMouseClicked(evt);
+            }
+        });
 
         SRCText.setColumns(20);
         SRCText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         SRCText.setRows(5);
-        SRCText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                SRCTextFocusGained(evt);
+        SRCText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                SRCTextMousePressed(evt);
+            }
+        });
+        SRCText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                SRCTextKeyPressed(evt);
             }
         });
         jScrollPane1.setViewportView(SRCText);
 
-        jTabbedPane1.addTab("Source Code", jScrollPane1);
+        Tabs.addTab("Source Code", jScrollPane1);
 
         ListText.setEditable(false);
         ListText.setColumns(20);
         ListText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         ListText.setRows(5);
+        ListText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                SRCTextMousePressed(evt);
+            }
+        });
         jScrollPane4.setViewportView(ListText);
 
-        jTabbedPane1.addTab("List File", jScrollPane4);
+        Tabs.addTab("List File", jScrollPane4);
 
         javax.swing.GroupLayout SRCPanelLayout = new javax.swing.GroupLayout(SRCPanel);
         SRCPanel.setLayout(SRCPanelLayout);
@@ -179,13 +214,13 @@ public final class GUI extends javax.swing.JFrame {
             SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 720, Short.MAX_VALUE)
             .addGroup(SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE))
+                .addComponent(Tabs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 728, Short.MAX_VALUE))
         );
         SRCPanelLayout.setVerticalGroup(
             SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 410, Short.MAX_VALUE)
             .addGroup(SRCPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                .addComponent(Tabs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout LayeredPaneLayout = new javax.swing.GroupLayout(LayeredPane);
@@ -229,10 +264,48 @@ public final class GUI extends javax.swing.JFrame {
         );
 
         jMenu1.setText("File");
+
+        LoadSRC.setText("Load Source Code");
+        LoadSRC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoadSRCActionPerformed(evt);
+            }
+        });
+        jMenu1.add(LoadSRC);
+
+        SaveSRCCode.setText("Save Source Code");
+        SaveSRCCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveSRCCodeActionPerformed(evt);
+            }
+        });
+        jMenu1.add(SaveSRCCode);
+
+        SaveListFile.setText("Save List File");
+        SaveListFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveListFileActionPerformed(evt);
+            }
+        });
+        jMenu1.add(SaveListFile);
+
+        SaveObjProgram.setText("Save Object Program");
+        SaveObjProgram.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveObjProgramActionPerformed(evt);
+            }
+        });
+        jMenu1.add(SaveObjProgram);
         jMenu1.add(jSeparator1);
 
+        SaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         SaveAll.setText("Save All");
         SaveAll.setContentAreaFilled(false);
+        SaveAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveAllActionPerformed(evt);
+            }
+        });
         jMenu1.add(SaveAll);
 
         jMenuBar1.add(jMenu1);
@@ -257,39 +330,107 @@ public final class GUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void SRCTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_SRCTextFocusGained
-        ObjectPanel.setVisible(false);
-    }//GEN-LAST:event_SRCTextFocusGained
-
     private void ObjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ObjectButtonActionPerformed
         ObjectPanel.setVisible(!ObjectPanel.isVisible());
+        SRCText.getCaret().setVisible(false);
     }//GEN-LAST:event_ObjectButtonActionPerformed
 
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
         SicASM.run(SRCText.getText());
+        Tabs.setSelectedIndex(1);
+        ObjectPanel.setVisible(true);
+        ObjectPanel.show(true);
     }//GEN-LAST:event_RunButtonActionPerformed
+
+    private void SRCTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SRCTextKeyPressed
+        ObjectPanel.setVisible(false);
+        ObjectPanel.repaint();
+    }//GEN-LAST:event_SRCTextKeyPressed
+
+    private void SRCTextMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SRCTextMousePressed
+        ObjectPanel.setVisible(false);
+        SRCText.getCaret().setVisible(true);
+        ObjectPanel.repaint();
+    }//GEN-LAST:event_SRCTextMousePressed
+
+    private void TabsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabsMouseClicked
+        ObjectPanel.setVisible(false);
+        ObjectPanel.repaint();
+    }//GEN-LAST:event_TabsMouseClicked
+
+    private void RunSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunSaveActionPerformed
+        RunButtonActionPerformed(evt);
+        this.file.setFileName("SRCFILE");
+        this.file.writeFile(SRCText.getText());
+        this.file.setFileName("LISFILE");
+        this.file.writeFile(ListText.getText());
+        this.file.setFileName("OBJFILE");
+        this.file.writeFile(ObjText.getText());
+        this.file.setFileName("DEVF2");
+        this.file.writeFile(ObjText.getText());
+        
+    }//GEN-LAST:event_RunSaveActionPerformed
+
+    private void SaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAllActionPerformed
+        this.file.setFileName("SRCFILE");
+        this.file.writeFile(SRCText.getText());
+        this.file.setFileName("LISFILE");
+        this.file.writeFile(ListText.getText());
+        this.file.setFileName("OBJFILE");
+        this.file.writeFile(ObjText.getText());
+        this.file.setFileName("DEVF2");
+        this.file.writeFile(ObjText.getText());
+    }//GEN-LAST:event_SaveAllActionPerformed
+
+    private void SaveObjProgramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveObjProgramActionPerformed
+        this.file.setFileName("OBJFILE");
+        this.file.writeFile(ObjText.getText());
+        this.file.setFileName("DEVF2");
+        this.file.writeFile(ObjText.getText());
+    }//GEN-LAST:event_SaveObjProgramActionPerformed
+
+    private void SaveListFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveListFileActionPerformed
+        this.file.setFileName("LISFILE");
+        this.file.writeFile(ListText.getText());
+    }//GEN-LAST:event_SaveListFileActionPerformed
+
+    private void LoadSRCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadSRCActionPerformed
+        this.file.setFileName("SRCFILE");
+        SRCText.setText(this.file.readFile());
+    }//GEN-LAST:event_LoadSRCActionPerformed
+
+    private void SaveSRCCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveSRCCodeActionPerformed
+        this.file.setFileName("SRCFILE");
+        this.file.writeFile(SRCText.getText());
+    }//GEN-LAST:event_SaveSRCCodeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane LayeredPane;
     private javax.swing.JTextArea ListText;
+    private javax.swing.JMenuItem LoadSRC;
     private javax.swing.JPanel MainPanel;
+    private javax.swing.JScrollPane ObjScroll;
+    private javax.swing.JTabbedPane ObjTab;
     private javax.swing.JTextArea ObjText;
     private javax.swing.JButton ObjectButton;
     private javax.swing.JPanel ObjectPanel;
     private javax.swing.JButton RunButton;
+    private javax.swing.JButton RunSave;
     private javax.swing.JPanel SRCPanel;
     private javax.swing.JTextArea SRCText;
     private javax.swing.JMenuItem SaveAll;
+    private javax.swing.JMenuItem SaveListFile;
+    private javax.swing.JMenuItem SaveObjProgram;
+    private javax.swing.JMenuItem SaveSRCCode;
     private javax.swing.JToolBar TabBar;
+    private javax.swing.JTabbedPane Tabs;
     private javax.swing.JToolBar ToolBar;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JToolBar.Separator jSeparator2;
     // End of variables declaration//GEN-END:variables
 }

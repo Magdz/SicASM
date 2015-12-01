@@ -29,11 +29,17 @@ public class SicASM {
     }
 
     public static void run(String SRCText){
-        String lines [] = SRCText.split("\n");
-        Counter(lines);
-        ObjFormat(lines);
-        ListFile(lines);
-        ObjProgram(lines);
+        try{
+            String lines [] = SRCText.split("\n");
+            Counter(lines);
+            ObjFormat(lines);
+            ListFile(lines);
+            ObjProgram(lines);
+            GUI.setListText(ListFile);
+            GUI.setObjText(ObjProgram);  
+        }catch(Exception e){
+            
+        }
     }
     
     private static void Counter(String[] lines){
@@ -138,7 +144,8 @@ public class SicASM {
                         + '^' + ZeroFormat(recordLength/2, 2) + record + '\n';
             }
         }
-        ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6).toUpperCase();
+        ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
+        ObjProgram = ObjProgram.toUpperCase();
     }
     
     private static String ZeroFormat(int x, int length){
@@ -153,11 +160,11 @@ public class SicASM {
      */
     public static void main(String[] args) {
         // Testing
-        ReadWriteFile file = new ReadWriteFile();
-        file.setFileName("Test.txt");
-        run(file.readFile());
-        System.out.println(ListFile);
-        System.out.println(ObjProgram);
+//        ReadWriteFile file = new ReadWriteFile();
+//        file.setFileName("Test.txt");
+//        run(file.readFile());
+//        System.out.println(ListFile);
+//        System.out.println(ObjProgram);
 
         //Main Running Controller
         Controller();
