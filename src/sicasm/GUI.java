@@ -154,7 +154,7 @@ public final class GUI extends javax.swing.JFrame {
 
         ObjText.setEditable(false);
         ObjText.setColumns(20);
-        ObjText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        ObjText.setFont(new java.awt.Font("Lucida Console", 0, 14)); // NOI18N
         ObjText.setRows(5);
         ObjScroll.setViewportView(ObjText);
 
@@ -179,7 +179,7 @@ public final class GUI extends javax.swing.JFrame {
         });
 
         SRCText.setColumns(20);
-        SRCText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        SRCText.setFont(new java.awt.Font("Lucida Console", 0, 14)); // NOI18N
         SRCText.setRows(5);
         SRCText.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -197,7 +197,7 @@ public final class GUI extends javax.swing.JFrame {
 
         ListText.setEditable(false);
         ListText.setColumns(20);
-        ListText.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        ListText.setFont(new java.awt.Font("Lucida Console", 0, 14)); // NOI18N
         ListText.setRows(5);
         ListText.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -223,6 +223,9 @@ public final class GUI extends javax.swing.JFrame {
                 .addComponent(Tabs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
         );
 
+        LayeredPane.setLayer(ObjectPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        LayeredPane.setLayer(SRCPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         javax.swing.GroupLayout LayeredPaneLayout = new javax.swing.GroupLayout(LayeredPane);
         LayeredPane.setLayout(LayeredPaneLayout);
         LayeredPaneLayout.setHorizontalGroup(
@@ -239,10 +242,8 @@ public final class GUI extends javax.swing.JFrame {
             .addGroup(LayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(SRCPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        LayeredPane.setLayer(ObjectPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ObjectPanel.getAccessibleContext().setAccessibleParent(LayeredPane);
-        LayeredPane.setLayer(SRCPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         SRCPanel.getAccessibleContext().setAccessibleParent(LayeredPane);
 
         javax.swing.GroupLayout MainPanelLayout = new javax.swing.GroupLayout(MainPanel);
