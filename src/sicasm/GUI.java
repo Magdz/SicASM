@@ -22,6 +22,7 @@ public final class GUI extends javax.swing.JFrame {
         file = new ReadWriteFile();
         Theme();
         initComponents();
+        ObjectPanel.setVisible(false);
     }
 
     private void Theme(){
@@ -339,6 +340,7 @@ public final class GUI extends javax.swing.JFrame {
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
         SicASM.run(SRCText.getText());
         Tabs.setSelectedIndex(1);
+        ObjectPanel.setVisible(false);
         ObjectPanel.setVisible(true);
         ObjectPanel.show(true);
     }//GEN-LAST:event_RunButtonActionPerformed
@@ -369,7 +371,6 @@ public final class GUI extends javax.swing.JFrame {
         this.file.writeFile(ObjText.getText());
         this.file.setFileName("DEVF2");
         this.file.writeFile(ObjText.getText());
-        
     }//GEN-LAST:event_RunSaveActionPerformed
 
     private void SaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAllActionPerformed

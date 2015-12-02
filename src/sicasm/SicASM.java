@@ -31,12 +31,14 @@ public class SicASM {
     public static void run(String SRCText){
         try{
             String lines [] = SRCText.split("\n");
+            ListFile = "";
+            ObjProgram = "";
             Counter(lines);
             ObjFormat(lines);
             ListFile(lines);
             ObjProgram(lines);
             GUI.setListText(ListFile);
-            GUI.setObjText(ObjProgram);  
+            GUI.setObjText(ObjProgram);
         }catch(Exception e){
             
         }
