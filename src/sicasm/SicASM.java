@@ -33,6 +33,7 @@ public class SicASM {
             String lines [] = SRCText.split("\n");
             ListFile = "";
             ObjProgram = "";
+            if(ErrorsHandler.Before(lines))return;
             Counter(lines);
             ObjFormat(lines);
             ListFile(lines);
@@ -42,6 +43,11 @@ public class SicASM {
         }catch(Exception e){
             
         }
+    }
+    
+    public static void setError(String Error){
+        ListFile = "";
+        GUI.setListText(Error);
     }
     
     private static void Counter(String[] lines){
