@@ -57,6 +57,7 @@ public class SicASM {
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
+            if(ErrorsHandler.Format(instruction))return;
             if ((instruction.getOPCode()).equalsIgnoreCase("START")) {
                 LOCCTR = Integer.parseInt(instruction.getOperand(), 16);
                 Address.addElement(Integer.toHexString(LOCCTR));

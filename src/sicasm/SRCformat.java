@@ -18,7 +18,7 @@ public class SRCformat {
     private String OPCode;
     private String Operand;
     private boolean errorFlag;
-    private boolean check;
+    private final boolean check;
     
     public SRCformat (String Instruction){
         this.Instruction = Instruction;
@@ -90,6 +90,10 @@ public class SRCformat {
      */
     public boolean isErrorFlag() {
         return errorFlag;
+    }
+
+    public boolean isCheck() {
+        return check;
     }
 
     /**
