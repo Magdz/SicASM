@@ -64,8 +64,10 @@ public class SicASM {
                 continue;
             }
             Address.addElement(Integer.toHexString(LOCCTR));
-            if (!(instruction.getLabel()).equals(""))
-                SYMTAB.setHash(instruction.getLabel(), Address.lastElement());            
+            if (!(instruction.getLabel()).equals("")){
+                if(ErrorsHandler.DuplicatedLabel(SYMTAB.getValue(instruction.getLabel()),instruction.getLabel()))return;
+                SYMTAB.setHash(instruction.getLabel(), Address.lastElement());
+            }
             if ((instruction.getOPCode()).equalsIgnoreCase("BYTE"))
                 LOCCTR ++;
             else if ((instruction.getOPCode()).equalsIgnoreCase("RESB"))

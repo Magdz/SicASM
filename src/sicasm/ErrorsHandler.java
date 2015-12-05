@@ -53,4 +53,10 @@ public class ErrorsHandler {
         SicASM.setError("INVALID INSTRUCTION FORMAT");
         return true;
     }
+    
+    public static boolean DuplicatedLabel(String Address, String Label){
+        if(Address == null)return false;
+        SicASM.setError("Duplicated Label: "+Label);
+        return true;
+    }
 }
