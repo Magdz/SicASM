@@ -79,13 +79,14 @@ public class SicASM {
         }
     }
     
-    private static void ObjFormat(String[] lines){
+    private static void ObjFormat(String[] lines) throws Exception{
         for(String line: lines){
             if(line.startsWith(".")){
                 ObjCode.addElement("");
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
+            if(ErrorsHandler.InvaledOpCodeInstruction(OPTAB.getValue(instruction.getOPCode()), instruction.getOPCode()))throw new Exception();
             if((instruction.getOPCode()).equalsIgnoreCase("START") || 
                     (instruction.getOPCode()).equalsIgnoreCase("RESW") ||
                     (instruction.getOPCode()).equalsIgnoreCase("RESB") ||
