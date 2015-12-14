@@ -24,8 +24,13 @@ public class SicASM {
     
     //Main Running Controller Function.
     private static void Controller(){
-        GUI = new GUI();
-        GUI.setVisible(true);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                GUI = new GUI();
+                GUI.setVisible(true);
+            }
+        });
     }
 
     public static void run(String SRCText){

@@ -61,7 +61,6 @@ public class ErrorsHandler {
     }
     
     public static boolean InvaledOpCodeInstruction(String Opcode, String inst){
-        System.out.println(inst);
         if(Opcode != null)return false;
         if(inst.equalsIgnoreCase("START") || inst.equalsIgnoreCase("END") || inst.equalsIgnoreCase("RESW") || inst.equalsIgnoreCase("RESB")
                 || inst.equalsIgnoreCase("BYTE") || inst.equalsIgnoreCase("WORD"))return false;
