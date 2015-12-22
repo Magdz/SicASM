@@ -16,6 +16,7 @@ public class SicASM {
     private static GUI GUI;
     private static final Hashtable OPTAB = new Hashtable(0);
     private static final Hashtable SYMTAB = new Hashtable();
+    private static final Hashtable LITTAB = new Hashtable(true);
     private static int LOCCTR;
     private static final Vector<String> Address = new Vector();
     private static final Vector<String> ObjCode = new Vector();
@@ -177,11 +178,8 @@ public class SicASM {
      */
     public static void main(String[] args) {
         // Testing
-//        ReadWriteFile file = new ReadWriteFile();
-//        file.setFileName("Test.txt");
-//        run(file.readFile());
-//        System.out.println(ListFile);
-//        System.out.println(ObjProgram);
+        LITTAB.setHash("C'EOF'", "0001");
+        System.out.println(LITTAB.getHexValue("C'EOF'"));
 
         //Main Running Controller
         Controller();

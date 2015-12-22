@@ -9,6 +9,7 @@ public class Hashtable {
     
     private final int N=(int)1e4+7;
     private final String[] Table;
+    private boolean isLITTAB = false;
     
     // Constructor create Empty Table
     public Hashtable(){
@@ -19,6 +20,11 @@ public class Hashtable {
     public Hashtable(int Seeder){
         this.Table = new String[N];
         Seeder();
+    }
+    
+    public Hashtable(boolean isLITTAB){
+        this.Table = new String[N];
+        this.isLITTAB = true;
     }
     
     // Get Hash Key for the Operation and store the Opcode
@@ -81,5 +87,27 @@ public class Hashtable {
         setHash("td","E0");
         setHash("tix","2C");
         setHash("wd","DC");
+    }
+    
+    public String getHexValue(String operation){
+        if(!isLITTAB)return null;
+        String Value = operation;
+        if(Value.startsWith("C'") || Value.startsWith("c'")){
+            String Letters = Value.substring(2, Value.length()-1);
+            String HexValue = "";
+            for(char Letter:Letters.toCharArray()){
+                HexValue+= Integer.toHexString(Letter);
+            }
+            return HexValue;
+        }else if(Value.startsWith("X'") || Value.startsWith("x'")){
+            return Value.substring(2, Value.length()-1);
+        }else{
+            return Value;
+        }
+    }
+    
+    public int getLength(String operation){
+        if(!isLITTAB)return 0;
+        return getHexValue(operation).length()/2;
     }
 }
