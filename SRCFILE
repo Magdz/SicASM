@@ -1,8 +1,10 @@
 TEST     START   1000
+ALPHA    RESW    1
 FIRST    LDX     ZERO
          LDA    =c'eof'
          LTORG
 LOOP     ADD     TABLE,X
+         ORG     ALPHA
          TIX    =x'1E'
          JLT     LOOP
          LDX    =c'er'

@@ -24,8 +24,8 @@ public class SicASM {
     private static String ListFile = "";
     private static String ObjProgram = "";
     private static ArrayList<String> names = new ArrayList();
-    private static ArrayList<ArrayList<String>> allNames = new ArrayList();
-    private static ArrayList<Hashtable> LITTABs = new ArrayList();
+    private static final ArrayList<ArrayList<String>> allNames = new ArrayList();
+    private static final ArrayList<Hashtable> LITTABs = new ArrayList();
 
     //Main Running Controller Function.
     private static void Controller() {
@@ -53,10 +53,10 @@ public class SicASM {
         GUI.setObjText(ObjProgram);
     }
 
-    /*public static void setError(String Error) {
+    public static void setError(String Error) {
         ListFile = "";
         GUI.setListText(Error);
-    }*/
+    }
     private static void Counter(String[] lines) {
         for (String line : lines) {
             if (line.startsWith(".")) {
@@ -72,22 +72,30 @@ public class SicASM {
                 Address.addElement(Integer.toHexString(LOCCTR));
                 continue;
             }
+            if((instruction.getOPCode()).equalsIgnoreCase("ORG")){
+                String newLOCCTR = SYMTAB.getValue(instruction.getOperand(), 0);
+                if(newLOCCTR != null){
+                    LOCCTR = Integer.parseInt(newLOCCTR, 16);
+                }else{
+                    System.out.println("Un Defined");
+                }
+                Address.addElement("");
+                continue;
+            }
             Address.addElement(Integer.toHexString(LOCCTR));
-
             if (instruction.isLiteral()) {
                 String name;
                 boolean found = false;
                 if (instruction.getOperand().startsWith("C'") || instruction.getOperand().startsWith("c'") || instruction.getOperand().startsWith("X'") || instruction.getOperand().startsWith("x'")) {
                     name = instruction.getOperand().substring(2, instruction.getOperand().length() - 1);
                     if (LITTABs.size() > 0) {
-                        for (int i = 0; i < LITTABs.size(); i++) {
-                            if (LITTABs.get(i).getValue(name, 0) != null) {
+                        for (Hashtable LITTAB1 : LITTABs) {
+                            if (LITTAB1.getValue(name, 0) != null) {
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
-
                             names.add(name);
                             LITTAB.setHash(name, instruction.getOperand());
                         }
@@ -98,14 +106,13 @@ public class SicASM {
                 } else {
                     name = instruction.getOperand();
                     if (LITTABs.size() > 0) {
-                        for (int i = 0; i < LITTABs.size(); i++) {
-                            if (LITTABs.get(i).getValue(instruction.getOperand(), 0) != null) {
+                        for (Hashtable LITTAB1 : LITTABs) {
+                            if (LITTAB1.getValue(instruction.getOperand(), 0) != null) {
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
-
                             names.add(name);
                             LITTAB.setHash(name, instruction.getOperand());
                         }
@@ -162,7 +169,8 @@ public class SicASM {
             }*/
             if ((instruction.getOPCode()).equalsIgnoreCase("START")
                     || (instruction.getOPCode()).equalsIgnoreCase("RESW")
-                    || (instruction.getOPCode()).equalsIgnoreCase("RESB")) {
+                    || (instruction.getOPCode()).equalsIgnoreCase("RESB")
+                    || (instruction.getOPCode()).equalsIgnoreCase("ORG")) {
                 ObjCode.addElement("");
             } else if (instruction.getOPCode().equalsIgnoreCase("WORD")
                     || instruction.getOPCode().equalsIgnoreCase("BYTE")) {

@@ -340,9 +340,7 @@ public final class GUI extends javax.swing.JFrame {
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
         SicASM.run(SRCText.getText());
         Tabs.setSelectedIndex(1);
-        ObjectPanel.setVisible(false);
         ObjectPanel.setVisible(true);
-        ObjectPanel.show(true);
     }//GEN-LAST:event_RunButtonActionPerformed
 
     private void SRCTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SRCTextKeyPressed
