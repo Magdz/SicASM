@@ -1,10 +1,13 @@
 TEST     START   1000
 FIRST    LDX     ZERO
-         LDA     ZERO
+         LDA    =c'eof'
+         LTORG
 LOOP     ADD     TABLE,X
-         TIX     K30
+         TIX    =x'1E'
          JLT     LOOP
-         STA     TOTAL
+         LDX    =c'er'
+         LTORG
+         STA    =x'05'
 TABLE    RESW    10
 TOTAL    RESW    1
 ZERO     WORD    0

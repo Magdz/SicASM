@@ -13,23 +13,36 @@ import static jdk.nashorn.internal.objects.NativeString.trim;
  * @author TOSHIBA
  */
 public class SRCformat {
-    private final String Instruction;
+    private final String instruction;
     private String Label;
     private String OPCode;
     private String Operand;
     private boolean errorFlag;
     private final boolean check;
+    private boolean literal;
     
     public SRCformat (String Instruction){
-        this.Instruction = Instruction;
+        this.instruction = Instruction;
         splitInstruction();
         check = checkFormat();
+        literal = checkLiteral();
     }
+    
+    private boolean checkLiteral(){
+        if (instruction.length() > 15) {
+            if (instruction.charAt(16) == '=')
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
+    
     private boolean checkFormat(){
-        if (Instruction.length() <= 15)
-            return !(Instruction.charAt(8) != ' ');
+        if (instruction.length() <= 15)
+            return !(instruction.charAt(8) != ' ');
         else
-            return !(Instruction.charAt(8) != ' ' || Instruction.charAt(15) != ' ' || Instruction.charAt(16) != ' ');
+            return !(instruction.charAt(8) != ' ' || instruction.charAt(15) != ' ' || instruction.charAt(16) != ' ' || instruction.charAt(16) != '=');
 
     }
     private void splitInstruction(){
@@ -97,10 +110,17 @@ public class SRCformat {
     }
 
     /**
-     * @return the Instruction
+     * @return the instruction
      */
     public String getInstruction() {
-        return Instruction;
+        return instruction;
+    }
+
+    /**
+     * @return the literal
+     */
+    public boolean isLiteral() {
+        return literal;
     }
     
     
