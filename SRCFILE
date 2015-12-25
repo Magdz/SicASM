@@ -5,10 +5,12 @@ FIRST    LDX     ZERO
          LTORG
 LOOP     ADD     TABLE,X
          ORG     ALPHA
+BUFF     EQU     ALPHA
          TIX    =x'1E'
          JLT     LOOP
          LDX    =c'er'
          LTORG
+         ORG
          STA    =x'05'
 TABLE    RESW    10
 TOTAL    RESW    1
