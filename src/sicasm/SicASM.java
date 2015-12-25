@@ -291,33 +291,71 @@ public class SicASM {
         String startAddress = ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
         ObjProgram += "H^" + programName + '^' + startAddress + '^' + programLength + '\n';
         boolean loop = true;
+        boolean flag = false;
+        int recordLength;
+        String record;
         int i = 1;
+        int counter = 0;
+        int jcount = 0;
+        int icount = 1;
         while (loop) {
-            int recordLength = 0;
+            recordLength = 0;
             int startAddIndex = i;
-            String record = "";
+            record = "";
+            jcount = icount;
             for (int j = i; j < lines.length - 1; j++) {
                 SRCformat ins = new SRCformat(lines[j]);
-                if (ins.getOPCode().equalsIgnoreCase("RESB") || ins.getOPCode().equalsIgnoreCase("RESW")) {
+                if (ins.getOPCode().equalsIgnoreCase("RESB") || ins.getOPCode().equalsIgnoreCase("RESW") || ins.getOPCode().equalsIgnoreCase("ORG") || ins.getOPCode().equalsIgnoreCase("EQU") || ins.getOPCode().equalsIgnoreCase("LTORG")) {
+                    if (ins.getOPCode().equalsIgnoreCase("LTORG")) {
+                        flag = true;
+                        counter++;
+                    }
                     i = j + 1;
+                    icount = jcount + 1;
                     loop = true;
                     break;
                 } else if (recordLength == 60) {
                     i = j;
+                    icount = jcount + 1;
                     loop = true;
                     break;
                 } else {
-                    if(!ObjCode.elementAt(j).equals("")){
-                        record += "^" + ObjCode.elementAt(j);
-                        recordLength += ObjCode.elementAt(j).length();
-                        loop = false;
+                    if (flag) {
+                        if (allNames.size() > 0) {
+                            for (int k = 0; k < allNames.get(counter - 1).size(); k++) {
+                                record += "^" + ObjCode.elementAt(jcount);
+                                recordLength += ObjCode.elementAt(jcount).length();
+                                jcount++;
+                            }
+                        }
+                        flag = false;
                     }
+                    record += "^" + ObjCode.elementAt(jcount);
+                    recordLength += ObjCode.elementAt(jcount).length();
+                    loop = false;
                 }
+                jcount++;
             }
             if (!record.equals("")) {
+                while(Address.elementAt(startAddIndex).equals("")){
+                    if(startAddIndex == 0) break;
+                    startAddIndex--;
+                }
                 ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.elementAt(startAddIndex), 16), 6)
                         + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
             }
+        }
+        record = "";
+        recordLength = 0;
+        if (allNames.size() > 0) {
+            jcount++;
+            for (int k = 0; k < allNames.get(counter).size(); k++) {
+                record += "^" + ObjCode.elementAt(jcount);
+                recordLength += ObjCode.elementAt(jcount).length();
+                jcount++;
+            }
+            ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.lastElement(), 16), 6)
+                        + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
         }
         ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
         ObjProgram = ObjProgram.toUpperCase();
