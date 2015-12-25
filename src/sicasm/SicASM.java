@@ -16,8 +16,8 @@ public class SicASM {
 
     private static GUI GUI;
     private static Hashtable OPTAB = new Hashtable(0);
-    private static Hashtable SYMTAB = new Hashtable();
-    private static Hashtable LITTAB = new Hashtable(true);
+    private static Hashtable SYMTAB = new Hashtable(false, 2);
+    private static Hashtable LITTAB = new Hashtable(true, 4);
     private static int LOCCTR;
     private static int TempLOCCTR;
     private static Vector<String> Address = new Vector();
@@ -41,8 +41,8 @@ public class SicASM {
     
     public static void intialize(){
         OPTAB = new Hashtable(0);
-        SYMTAB = new Hashtable();
-        LITTAB = new Hashtable(true);
+        SYMTAB = new Hashtable(false, 2);
+        LITTAB = new Hashtable(true, 4);
         LOCCTR = 0;
         Address = new Vector();
         ObjCode = new Vector();
@@ -106,17 +106,21 @@ public class SicASM {
                 if(instruction.getLabel().equalsIgnoreCase("")){
                     System.out.println("Error to Handle");
                 }else if(instruction.getOperand().equalsIgnoreCase("*")){
-                    SYMTAB.setHash(instruction.getLabel(), Integer.toHexString(LOCCTR));
+                    SYMTAB.setHash(instruction.getLabel(), Integer.toHexString(LOCCTR), "Relative");
                 }else{
                     try{
-                        SYMTAB.setHash(instruction.getLabel(), ZeroFormat(Integer.parseInt(instruction.getOperand()),4));
+                        SYMTAB.setHash(instruction.getLabel(), ZeroFormat(Integer.parseInt(instruction.getOperand()),4), "Relative");
                     }catch(Exception e){
-                        String value = SYMTAB.getValue(instruction.getOperand(), 0);
+                        String Expression = instruction.getOperand();
+                        String value = SYMTAB.getValue(Expression, 0);
                         if(value != null){
-                            SYMTAB.setHash(instruction.getLabel(), value);
-                            System.out.println(value);
+                            SYMTAB.setHash(instruction.getLabel(), value, "Relative");
                         }else{
-                            System.out.println("Un Defined");
+                            try{
+                                CalcExpression(Expression, instruction);
+                            }catch(Exception ex){
+                                System.out.println("Un Defined Label or invalied Expression");
+                            }
                         }
                     }
                 }
@@ -175,7 +179,7 @@ public class SicASM {
                     }
                     LITTABs.add(LITTAB);
                     allNames.add(names);
-                    LITTAB = new Hashtable(true);
+                    LITTAB = new Hashtable(true, 4);
                     names = new ArrayList();
                 }
             }
@@ -183,7 +187,7 @@ public class SicASM {
                 /*if (ErrorsHandler.DuplicatedLabel(SYMTAB.getValue(instruction.getLabel(), 0), instruction.getLabel())) {
                     return;
                 }*/
-                SYMTAB.setHash(instruction.getLabel(), Address.lastElement());
+                SYMTAB.setHash(instruction.getLabel(), Address.lastElement(), "Relative");
             }
             if ((instruction.getOPCode()).equalsIgnoreCase("BYTE")) {
                 LOCCTR++;
@@ -379,4 +383,54 @@ public class SicASM {
         Controller();
     }
 
+    private static void CalcExpression(String Expression, SRCformat instruction) throws Exception{
+        String parameter = "";
+        char operation = 0;
+        int result = 0;
+        String Type = "";
+        for(int i = 0; i <= Expression.length() ; ++i){
+            if(i == Expression.length() || Expression.charAt(i) == '+' || Expression.charAt(i) == '-'){
+                if(i == Expression.length() && SYMTAB.getValue(parameter, 1) == "Relative"){
+                    if((Type == "Relative" && operation == '+') 
+                            || (Type == "Absolute" && operation == '-')){
+                        throw new Exception();
+                    }
+                }
+                try{
+                    switch(operation){
+                        case '+':
+                            result += Integer.parseInt(parameter);
+                            break;
+                        case '-':
+                            result -= Integer.parseInt(parameter);
+                            break;
+                        default:
+                            Type = "Absolute";
+                            result = Integer.parseInt(parameter);
+                            break;
+                    }
+                }catch(Exception ex){
+                    switch(operation){
+                        case '+':
+                            result += Integer.parseInt(SYMTAB.getValue(parameter, 0), 16);
+                            break;
+                        case '-':
+                            result -= Integer.parseInt(SYMTAB.getValue(parameter, 0), 16);
+                            break;
+                        default:
+                            Type = "Relative";
+                            result = Integer.parseInt(SYMTAB.getValue(parameter, 0), 16);
+                            break;
+                    }
+                }
+                if(i < Expression.length())operation = Expression.charAt(i);
+                parameter = "";
+            }else{
+                parameter += Expression.charAt(i);
+            }
+        }
+        SYMTAB.setHash(instruction.getLabel(), ZeroFormat(result, 4), "Absolute");
+        System.out.println(SYMTAB.getValue(instruction.getLabel(), 0));
+    }
+    
 }

@@ -5,7 +5,7 @@ FIRST    LDX     ZERO
          LTORG
 LOOP     ADD     TABLE,X
          ORG     ALPHA
-BUFF     EQU     ALPHA
+BUFF     EQU     LOOP-ALPHA
          TIX    =x'1E'
          JLT     LOOP
          LDX    =c'er'

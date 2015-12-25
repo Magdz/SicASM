@@ -7,43 +7,38 @@ package sicasm;
 public class Hashtable {
 
     private final int N = (int) 1e4 + 7;
-    private final String[] Table;
     private final String[][] Table2D;
     private boolean isLITTAB;
     private boolean empty;
 
-    // Constructor create Empty Table
-    public Hashtable() {
-        this.Table = new String[N];
-        this.Table2D = new String[N][4];
-        isLITTAB = false;
-        empty = true;
-    }
-
     // Constructor create new Table and Seed with operations
     public Hashtable(int Seeder) {
-        this.Table = new String[N];
-        this.Table2D = new String[N][4];
+        this.Table2D = new String[N][1];
         Seeder();
     }
 
-    public Hashtable(boolean isLITTAB) {
-        this.Table = new String[N];
-        this.Table2D = new String[N][4];
-        this.isLITTAB = true;
+    public Hashtable(boolean isLITTAB, int length) {
+        this.Table2D = new String[N][length];
+        this.isLITTAB = isLITTAB;
+        this.empty = true;
     }
 
     // Get Hash Key for the Operation and store the Opcode
     public void setHash(String key, String value) {
         int Hash = Hash1(key);
         empty = false;
+        Table2D[Hash][0] = value;
         if(isLITTAB){
-            Table2D[Hash][0] = value;
             Table2D[Hash][1] = getHexValue(value);
             Table2D[Hash][2] = Integer.toHexString(getLength(value));
         }
-        else
-            Table[Hash] = value;
+    }
+    
+    public void setHash(String key, String value,String Type){
+        int Hash = Hash1(key);
+        empty = false;
+        Table2D[Hash][0] = value;
+        Table2D[Hash][1] = Type;
     }
         
     public void setAddress(String key, String value){
@@ -54,10 +49,7 @@ public class Hashtable {
     // Get the Opcode form the table for the operation
     public String getValue(String key, int i) {
         int Hash = Hash1(key);
-        if(isLITTAB){
-            return Table2D[Hash][i];
-        }
-        return Table[Hash];
+        return Table2D[Hash][i];
     }
 
     // Create a Hash Key for the key
