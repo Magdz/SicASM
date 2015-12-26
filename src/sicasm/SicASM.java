@@ -6,7 +6,10 @@
 package sicasm;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Vector;
+import javafx.util.Pair;
 
 /**
  *
@@ -27,6 +30,7 @@ public class SicASM {
     private static ArrayList<String> names = new ArrayList();
     private static ArrayList<ArrayList<String>> allNames = new ArrayList();
     private static ArrayList<Hashtable> LITTABs = new ArrayList();
+    private static Queue<Pair<String, Integer>> Errors;
 
     //Main Running Controller Function.
     private static void Controller() {
@@ -51,36 +55,42 @@ public class SicASM {
         names = new ArrayList();
         allNames = new ArrayList();
         LITTABs = new ArrayList();
+        Errors = new LinkedList();
     }
 
     public static void run(String SRCText) {
         intialize();
         String lines[] = SRCText.split("\n");
-        /*if (ErrorsHandler.Before(lines)) {
-                return;
-            }*/
-        Counter(lines);
-        ObjFormat(lines);
-        ListFile(lines);
-        ObjProgram(lines);
+        ErrorsHandler.Before(lines);
+        try{
+            Counter(lines);
+            ObjFormat(lines);
+            ListFile(lines);
+            ObjProgram(lines);
+        }catch(Exception e){
+            while(!Errors.isEmpty()){
+                ListFile += Errors.poll().getKey();
+            }
+        }
         GUI.setListText(ListFile);
         GUI.setObjText(ObjProgram);
     }
 
-    public static void setError(String Error) {
-        ListFile = "";
-        GUI.setListText(Error);
+    public static void setError(String Error, int Place) {
+        Errors.add(new Pair(Error+"\n", Place));
     }
+    
     private static void Counter(String[] lines) {
+        int place = -1;
         for (String line : lines) {
+            place++;
             if (line.startsWith(".")) {
                 Address.addElement("");
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
-            /*if (ErrorsHandler.Format(instruction)) {
-                return;
-            }*/
+            ErrorsHandler.Format(instruction, place);
+            ErrorsHandler.DuplicatedLabel(SYMTAB.getValue(instruction.getLabel(), 0), instruction.getLabel(), place);
             if ((instruction.getOPCode()).equalsIgnoreCase("START")) {
                 LOCCTR = Integer.parseInt(instruction.getOperand(), 16);
                 TempLOCCTR = LOCCTR;
@@ -96,7 +106,7 @@ public class SicASM {
                         TempLOCCTR = LOCCTR;
                         LOCCTR = Integer.parseInt(newLOCCTR, 16);
                     }else{
-                        System.out.println("Un Defined");
+                        ErrorsHandler.UnDefinedLabel(null, instruction.getOperand(), place);
                     }
                 }
                 Address.addElement("");
@@ -104,7 +114,7 @@ public class SicASM {
             }
             if((instruction.getOPCode()).equalsIgnoreCase("EQU")){
                 if(instruction.getLabel().equalsIgnoreCase("")){
-                    System.out.println("Error to Handle");
+                    ErrorsHandler.MissingOperand(place);
                 }else if(instruction.getOperand().equalsIgnoreCase("*")){
                     SYMTAB.setHash(instruction.getLabel(), Integer.toHexString(LOCCTR), "Relative");
                 }else{
@@ -119,7 +129,7 @@ public class SicASM {
                             try{
                                 CalcExpression(Expression, instruction);
                             }catch(Exception ex){
-                                System.out.println("Un Defined Label or invalied Expression");
+                                ErrorsHandler.InvaledExpresssion(place);
                             }
                         }
                     }
@@ -129,9 +139,9 @@ public class SicASM {
             }
             Address.addElement(Integer.toHexString(LOCCTR));
             if (instruction.isLiteral()) {
-                String name;
+                String name = null;
                 boolean found = false;
-                if (instruction.getOperand().startsWith("C'") || instruction.getOperand().startsWith("c'") || instruction.getOperand().startsWith("X'") || instruction.getOperand().startsWith("x'")) {
+                if ((instruction.getOperand().startsWith("C'") || instruction.getOperand().startsWith("c'") || instruction.getOperand().startsWith("X'") || instruction.getOperand().startsWith("x'")) && instruction.getOperand().endsWith("'")) {
                     name = instruction.getOperand().substring(2, instruction.getOperand().length() - 1);
                     if (LITTABs.size() > 0) {
                         for (Hashtable LITTAB1 : LITTABs) {
@@ -149,21 +159,27 @@ public class SicASM {
                         LITTAB.setHash(name, instruction.getOperand());
                     }
                 } else {
-                    name = instruction.getOperand();
-                    if (LITTABs.size() > 0) {
-                        for (Hashtable LITTAB1 : LITTABs) {
-                            if (LITTAB1.getValue(instruction.getOperand(), 0) != null) {
-                                found = true;
-                                break;
+                    try{
+                        name = instruction.getOperand();
+                        Integer.parseInt(name);
+                        if (LITTABs.size() > 0) {
+                            for (Hashtable LITTAB1 : LITTABs) {
+                                if (LITTAB1.getValue(instruction.getOperand(), 0) != null) {
+                                    found = true;
+                                    break;
+                                }
                             }
-                        }
-                        if (!found) {
+                            if (!found) {
+                                names.add(name);
+                                LITTAB.setHash(name, instruction.getOperand());
+                            }
+                        } else {
                             names.add(name);
-                            LITTAB.setHash(name, instruction.getOperand());
+                            LITTAB.setHash(name, name);
                         }
-                    } else {
-                        names.add(name);
-                        LITTAB.setHash(name, name);
+                    }catch(Exception e){
+                        System.out.println(place);
+                        ErrorsHandler.UnDefinedLabel(null, name, place);
                     }
                 }
             } else if (instruction.getOPCode().equalsIgnoreCase("LTORG") || instruction.getOPCode().equals("END")) {
@@ -184,9 +200,6 @@ public class SicASM {
                 }
             }
             if (!(instruction.getLabel()).equals("")) {
-                /*if (ErrorsHandler.DuplicatedLabel(SYMTAB.getValue(instruction.getLabel(), 0), instruction.getLabel())) {
-                    return;
-                }*/
                 SYMTAB.setHash(instruction.getLabel(), Address.lastElement(), "Relative");
             }
             if ((instruction.getOPCode()).equalsIgnoreCase("BYTE")) {
@@ -203,15 +216,15 @@ public class SicASM {
 
     private static void ObjFormat(String[] lines) {
         int counter = 0;
+        int place = -1;
         for (String line : lines) {
+            place++;
             if (line.startsWith(".")) {
                 ObjCode.addElement("");
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
-            /*if (ErrorsHandler.InvaledOpCodeInstruction(OPTAB.getValue(instruction.getOPCode(), 0), instruction.getOPCode())) {
-                throw new Exception();
-            }*/
+            ErrorsHandler.InvaledOpCodeInstruction(OPTAB.getValue(instruction.getOPCode(), 0), instruction.getOPCode(), place);
             if ((instruction.getOPCode()).equalsIgnoreCase("START")
                     || (instruction.getOPCode()).equalsIgnoreCase("RESW")
                     || (instruction.getOPCode()).equalsIgnoreCase("RESB")
@@ -248,6 +261,7 @@ public class SicASM {
                 }
 
             } else {
+                ErrorsHandler.UnDefinedLabel(SYMTAB.getValue(instruction.getOperand(), 0), instruction.getOperand(),  place);
                 ObjCode.addElement(OPTAB.getValue(instruction.getOPCode(), 0) + SYMTAB.getValue(instruction.getOperand(), 0));
             }
         }
@@ -258,6 +272,11 @@ public class SicASM {
         int count = 0;
         String name;
         for (int i = 0; i < lines.length; ++i) {
+            if(!Errors.isEmpty()){
+                if(i == Errors.peek().getValue()){
+                    ListFile += Errors.poll().getKey();
+                }
+            }
             SRCformat instruction = new SRCformat(lines[i]);
             if (instruction.getOPCode().equalsIgnoreCase("LTORG") || instruction.getOPCode().equalsIgnoreCase("END")) {
                 if (allNames.size() > 0) {
@@ -430,7 +449,6 @@ public class SicASM {
             }
         }
         SYMTAB.setHash(instruction.getLabel(), ZeroFormat(result, 4), "Absolute");
-        System.out.println(SYMTAB.getValue(instruction.getLabel(), 0));
     }
     
 }

@@ -21,21 +21,21 @@ public class ErrorsHandler {
     
     private static boolean isEmpty(String[] lines){
         if(lines.length>1)return false;
-        SicASM.setError("No Code");
+        SicASM.setError(" **** No Code", 0);
         return true;
     }
     
     private static boolean StartAddress(String line){
         SRCformat instruction = new SRCformat(line);
         if(instruction.getOPCode().equalsIgnoreCase("START"))return false;
-        SicASM.setError("INVALID STARTING ADDRESS");
+        SicASM.setError(" **** INVALID STARTING ADDRESS", 0);
         return true;
     }
     
     private static boolean EndAddress(String line){
         SRCformat instruction = new SRCformat(line);
         if(instruction.getOPCode().equalsIgnoreCase("END"))return false;
-        SicASM.setError("NO ENDING ADDRESS SPECIFIED");
+        SicASM.setError(" **** NO ENDING ADDRESS SPECIFIED", 0);
         return true;
     }
     
@@ -44,27 +44,42 @@ public class ErrorsHandler {
         SRCformat instruction2 = new SRCformat(line2);
         if(instruction1.getLabel().equalsIgnoreCase(instruction2.getOperand())
                 || instruction1.getOperand().equalsIgnoreCase(instruction2.getOperand()))return false;
-        SicASM.setError("INVALID ENDING ADDRESS");
+        SicASM.setError(" **** INVALID ENDING ADDRESS", 0);
         return true;
     }
     
-    public static boolean Format(SRCformat instruction){
+    public static boolean Format(SRCformat instruction, int place){
         if(instruction.isCheck() && !instruction.isErrorFlag())return false;
-        SicASM.setError("INVALID INSTRUCTION FORMAT");
+        SicASM.setError(" **** INVALID INSTRUCTION FORMAT", place);
         return true;
     }
     
-    public static boolean DuplicatedLabel(String Address, String Label){
+    public static boolean DuplicatedLabel(String Address, String Label, int place){
         if(Address == null)return false;
-        SicASM.setError("Duplicated Label: "+Label);
+        SicASM.setError(" **** Duplicated Label: "+Label, place);
         return true;
     }
     
-    public static boolean InvaledOpCodeInstruction(String Opcode, String inst){
+    public static boolean InvaledOpCodeInstruction(String Opcode, String inst, int place){
         if(Opcode != null)return false;
         if(inst.equalsIgnoreCase("START") || inst.equalsIgnoreCase("END") || inst.equalsIgnoreCase("RESW") || inst.equalsIgnoreCase("RESB")
-                || inst.equalsIgnoreCase("BYTE") || inst.equalsIgnoreCase("WORD"))return false;
-        SicASM.setError("INVALID Opcode Instruction: " + inst);
+                || inst.equalsIgnoreCase("BYTE") || inst.equalsIgnoreCase("WORD")
+                || inst.equalsIgnoreCase("ORG") || inst.equalsIgnoreCase("LTORG")
+                || inst.equalsIgnoreCase("EQU"))return false;
+        SicASM.setError(" **** INVALID Opcode Instruction: " + inst, place);
         return true;
+    }
+    
+    public static void UnDefinedLabel(String inst, String Operand, int place){
+        if(inst != null)return;
+        SicASM.setError(" **** UnDefined Label: " + Operand, place);
+    }
+    
+    public static void InvaledExpresssion(int place){
+        SicASM.setError(" **** UnDefined Label or invalied Expression", place);
+    }
+    
+    public static void MissingOperand(int place){
+        SicASM.setError(" **** Missing Operand or Label", place);
     }
 }

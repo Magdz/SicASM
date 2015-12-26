@@ -19,7 +19,7 @@ public class SRCformat {
     private String Operand;
     private boolean errorFlag;
     private final boolean check;
-    private boolean literal;
+    private final boolean literal;
     
     public SRCformat (String Instruction){
         this.instruction = Instruction;
@@ -40,15 +40,15 @@ public class SRCformat {
     
     private boolean checkFormat(){
         if (instruction.length() <= 15)
-            return !(instruction.charAt(8) != ' ');
+            return instruction.charAt(8) == ' ';
         else
-            return !(instruction.charAt(8) != ' ' || instruction.charAt(15) != ' ' || instruction.charAt(16) != ' ' || instruction.charAt(16) != '=');
+            return instruction.charAt(8) == ' ' && instruction.charAt(15) == ' ' && (instruction.charAt(16) == ' ' || instruction.charAt(16) == '=');
 
     }
     private void splitInstruction(){
-        String label = null;
-        String opcode = null;
-        String operand = null;
+        String label;
+        String opcode;
+        String operand;
         label = getInstruction().substring(0, 8);
         if (getInstruction().length() <= 15){
             opcode = getInstruction().substring(9, getInstruction().length());
