@@ -27,7 +27,6 @@ public class SicASM {
     private static ArrayList<String> names = new ArrayList();
     private static ArrayList<ArrayList<String>> allNames = new ArrayList();
     private static ArrayList<Hashtable> LITTABs = new ArrayList();
-    private static boolean error;
 
     //Main Running Controller Function.
     private static void Controller() {
@@ -52,12 +51,14 @@ public class SicASM {
         names = new ArrayList();
         allNames = new ArrayList();
         LITTABs = new ArrayList();
-        error = false;
     }
 
     public static void run(String SRCText) {
         intialize();
         String lines[] = SRCText.split("\n");
+        /*if (ErrorsHandler.Before(lines)) {
+                return;
+            }*/
         Counter(lines);
         ObjFormat(lines);
         ListFile(lines);
@@ -67,10 +68,9 @@ public class SicASM {
     }
 
     public static void setError(String Error) {
-        ListFile += Error + "\n";
-        error = true;
+        ListFile = "";
+        GUI.setListText(Error);
     }
-    
     private static void Counter(String[] lines) {
         for (String line : lines) {
             if (line.startsWith(".")) {
@@ -78,6 +78,9 @@ public class SicASM {
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
+            /*if (ErrorsHandler.Format(instruction)) {
+                return;
+            }*/
             if ((instruction.getOPCode()).equalsIgnoreCase("START")) {
                 LOCCTR = Integer.parseInt(instruction.getOperand(), 16);
                 TempLOCCTR = LOCCTR;
@@ -93,17 +96,15 @@ public class SicASM {
                         TempLOCCTR = LOCCTR;
                         LOCCTR = Integer.parseInt(newLOCCTR, 16);
                     }else{
-                        instruction.setValidOperand(false);
+                        System.out.println("Un Defined");
                     }
                 }
                 Address.addElement("");
                 continue;
             }
             if((instruction.getOPCode()).equalsIgnoreCase("EQU")){
-                if (SYMTAB.getValue(instruction.getOPCode(), 0) == null){
-                    instruction.setValidOperand(false);
-                } else if(instruction.getLabel().equalsIgnoreCase("")){
-                    instruction.setEQULabel(true);
+                if(instruction.getLabel().equalsIgnoreCase("")){
+                    System.out.println("Error to Handle");
                 }else if(instruction.getOperand().equalsIgnoreCase("*")){
                     SYMTAB.setHash(instruction.getLabel(), Integer.toHexString(LOCCTR), "Relative");
                 }else{
@@ -118,7 +119,7 @@ public class SicASM {
                             try{
                                 CalcExpression(Expression, instruction);
                             }catch(Exception ex){
-                                instruction.setExp(false);
+                                System.out.println("Un Defined Label or invalied Expression");
                             }
                         }
                     }
@@ -183,9 +184,9 @@ public class SicASM {
                 }
             }
             if (!(instruction.getLabel()).equals("")) {
-                if (SYMTAB.getValue(instruction.getLabel(), 0) != null) {
-                    instruction.setDuplicated(true);
-                }
+                /*if (ErrorsHandler.DuplicatedLabel(SYMTAB.getValue(instruction.getLabel(), 0), instruction.getLabel())) {
+                    return;
+                }*/
                 SYMTAB.setHash(instruction.getLabel(), Address.lastElement(), "Relative");
             }
             if ((instruction.getOPCode()).equalsIgnoreCase("BYTE")) {
@@ -208,6 +209,9 @@ public class SicASM {
                 continue;
             }
             SRCformat instruction = new SRCformat(line);
+            /*if (ErrorsHandler.InvaledOpCodeInstruction(OPTAB.getValue(instruction.getOPCode(), 0), instruction.getOPCode())) {
+                throw new Exception();
+            }*/
             if ((instruction.getOPCode()).equalsIgnoreCase("START")
                     || (instruction.getOPCode()).equalsIgnoreCase("RESW")
                     || (instruction.getOPCode()).equalsIgnoreCase("RESB")
@@ -228,14 +232,8 @@ public class SicASM {
                 }
                 counter++;
             } else if (instruction.getOperand().endsWith(",X") || instruction.getOperand().endsWith(",x")) {
-                if (SYMTAB.getValue(instruction.getOperand().substring(0, instruction.getOperand().length() - 2), 0) == null){
-                    instruction.setValidOperand(false);
-                    ObjCode.addElement("");
-                }
-                else{
-                    String Modifed = Integer.toHexString(Integer.parseInt(SYMTAB.getValue(instruction.getOperand().substring(0, instruction.getOperand().length() - 2), 0), 16) | (int) Math.pow(2, 15));
-                    ObjCode.addElement(OPTAB.getValue(instruction.getOPCode(), 0) + Modifed);
-                }
+                String Modifed = Integer.toHexString(Integer.parseInt(SYMTAB.getValue(instruction.getOperand().substring(0, instruction.getOperand().length() - 2), 0), 16) | (int) Math.pow(2, 15));
+                ObjCode.addElement(OPTAB.getValue(instruction.getOPCode(), 0) + Modifed);
             } else if (instruction.isLiteral()) {
                 for (int count = 0; count < allNames.size(); count++) {
                     for (int i = 0; i < allNames.get(count).size(); i++) {
@@ -250,11 +248,7 @@ public class SicASM {
                 }
 
             } else {
-                if (SYMTAB.getValue(instruction.getOperand(), 0) == null){
-                    instruction.setValidOperand(false);
-                    ObjCode.addElement("");
-                } else
-                    ObjCode.addElement(OPTAB.getValue(instruction.getOPCode(), 0) + SYMTAB.getValue(instruction.getOperand(), 0));
+                ObjCode.addElement(OPTAB.getValue(instruction.getOPCode(), 0) + SYMTAB.getValue(instruction.getOperand(), 0));
             }
         }
     }
@@ -280,19 +274,6 @@ public class SicASM {
                 ListFile += Address.get(count).toUpperCase() + '\t' + ObjCode.get(count).toUpperCase() + '\t' + lines[i] + '\n';
                 count++;
             }
-            if (i==0){
-                instruction.StartAddress();
-            } else if (i == lines.length-1){
-                instruction.EndAddress();
-                instruction.ProgramName((new SRCformat (lines[0])).getLabel());
-            } else {
-                instruction.Format();
-                instruction.DuplicatedLabel();
-                instruction.InvalidOpCodeInstruction();
-                instruction.validEQULabel();
-                instruction.validExpression();
-                instruction.validOperand();
-            }
 
         }
     }
@@ -313,77 +294,75 @@ public class SicASM {
         String programLength = ZeroFormat(Length, 6);
         String startAddress = ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
         ObjProgram += "H^" + programName + '^' + startAddress + '^' + programLength + '\n';
-        if (!error){
-            boolean loop = true;
-            boolean flag = false;
-            int recordLength;
-            String record;
-            int i = 1;
-            int counter = 0;
-            int jcount = 0;
-            int icount = 1;
-            while (loop) {
-                recordLength = 0;
-                int startAddIndex = i;
-                record = "";
-                jcount = icount;
-                for (int j = i; j < lines.length - 1; j++) {
-                    SRCformat ins = new SRCformat(lines[j]);
-                    if (ins.getOPCode().equalsIgnoreCase("RESB") || ins.getOPCode().equalsIgnoreCase("RESW") || ins.getOPCode().equalsIgnoreCase("ORG") || ins.getOPCode().equalsIgnoreCase("EQU") || ins.getOPCode().equalsIgnoreCase("LTORG")) {
-                        if (ins.getOPCode().equalsIgnoreCase("LTORG")) {
-                            flag = true;
-                            counter++;
-                        }
-                        i = j + 1;
-                        icount = jcount + 1;
-                        loop = true;
-                        break;
-                    } else if (recordLength == 60) {
-                        i = j;
-                        icount = jcount + 1;
-                        loop = true;
-                        break;
-                    } else {
-                        if (flag) {
-                            if (allNames.size() > 0) {
-                                for (int k = 0; k < allNames.get(counter - 1).size(); k++) {
-                                    record += "^" + ObjCode.elementAt(jcount);
-                                    recordLength += ObjCode.elementAt(jcount).length();
-                                    jcount++;
-                                }
-                            }
-                            flag = false;
-                        }
-                        record += "^" + ObjCode.elementAt(jcount);
-                        recordLength += ObjCode.elementAt(jcount).length();
-                        loop = false;
-                    }
-                    jcount++;
-                }
-                if (!record.equals("")) {
-                    while(Address.elementAt(startAddIndex).equals("")){
-                        if(startAddIndex == 0) break;
-                        startAddIndex--;
-                    }
-                    ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.elementAt(startAddIndex), 16), 6)
-                            + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
-                }
-            }
-            record = "";
+        boolean loop = true;
+        boolean flag = false;
+        int recordLength;
+        String record;
+        int i = 1;
+        int counter = 0;
+        int jcount = 0;
+        int icount = 1;
+        while (loop) {
             recordLength = 0;
-            if (allNames.size() > 0) {
-                jcount++;
-                for (int k = 0; k < allNames.get(counter).size(); k++) {
+            int startAddIndex = i;
+            record = "";
+            jcount = icount;
+            for (int j = i; j < lines.length - 1; j++) {
+                SRCformat ins = new SRCformat(lines[j]);
+                if (ins.getOPCode().equalsIgnoreCase("RESB") || ins.getOPCode().equalsIgnoreCase("RESW") || ins.getOPCode().equalsIgnoreCase("ORG") || ins.getOPCode().equalsIgnoreCase("EQU") || ins.getOPCode().equalsIgnoreCase("LTORG")) {
+                    if (ins.getOPCode().equalsIgnoreCase("LTORG")) {
+                        flag = true;
+                        counter++;
+                    }
+                    i = j + 1;
+                    icount = jcount + 1;
+                    loop = true;
+                    break;
+                } else if (recordLength == 60) {
+                    i = j;
+                    icount = jcount + 1;
+                    loop = true;
+                    break;
+                } else {
+                    if (flag) {
+                        if (allNames.size() > 0) {
+                            for (int k = 0; k < allNames.get(counter - 1).size(); k++) {
+                                record += "^" + ObjCode.elementAt(jcount);
+                                recordLength += ObjCode.elementAt(jcount).length();
+                                jcount++;
+                            }
+                        }
+                        flag = false;
+                    }
                     record += "^" + ObjCode.elementAt(jcount);
                     recordLength += ObjCode.elementAt(jcount).length();
-                    jcount++;
+                    loop = false;
                 }
-                ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.lastElement(), 16), 6)
-                            + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
+                jcount++;
             }
-            ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
-            ObjProgram = ObjProgram.toUpperCase();
+            if (!record.equals("")) {
+                while(Address.elementAt(startAddIndex).equals("")){
+                    if(startAddIndex == 0) break;
+                    startAddIndex--;
+                }
+                ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.elementAt(startAddIndex), 16), 6)
+                        + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
+            }
         }
+        record = "";
+        recordLength = 0;
+        if (allNames.size() > 0) {
+            jcount++;
+            for (int k = 0; k < allNames.get(counter).size(); k++) {
+                record += "^" + ObjCode.elementAt(jcount);
+                recordLength += ObjCode.elementAt(jcount).length();
+                jcount++;
+            }
+            ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.lastElement(), 16), 6)
+                        + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
+        }
+        ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
+        ObjProgram = ObjProgram.toUpperCase();
     }
 
     private static String ZeroFormat(int x, int length) {
@@ -451,6 +430,7 @@ public class SicASM {
             }
         }
         SYMTAB.setHash(instruction.getLabel(), ZeroFormat(result, 4), "Absolute");
+        System.out.println(SYMTAB.getValue(instruction.getLabel(), 0));
     }
     
 }
