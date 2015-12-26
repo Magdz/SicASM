@@ -1,12 +1,24 @@
 1000		TEST     START   1000
-1000	041033	FIRST    LDX     ZERO
-1003	001033	         LDA     ZERO
-1006	189012	LOOP     ADD     TABLE,X
-1009	2C1036	         TIX     K30
-100C	381006	         JLT     LOOP
-100F	0C1030	         STA     TOTAL
+1000		ALPHA    RESW    1
+1003	041033	FIRST    LDX     ZERO
+1006	001009	         LDA    =c'eof'
+1009		         LTORG
+1009	656F66	*	=c'eof'
+100C	189012	LOOP     ADD     TABLE,X
+		         ORG     ALPHA
+		BUFF     EQU     LOOP-ALPHA
+1000	2C1009	         TIX    =x'1E'
+1003	38100C	         JLT     LOOP
+1006	04100A	         LDX    =c'er'
+1009		         LTORG
+1009	00001E	*	=x'1E'
+100A	006572	*	=c'er'
+100D	18000C	         ADD     BUFF
+		         ORG
+100F	0C1039	         STA    =x'05'
 1012		TABLE    RESW    10
 1030		TOTAL    RESW    1
 1033	000000	ZERO     WORD    0
 1036	00001E	K30      WORD    30
 1039		         END     TEST
+1039	000005	*	=x'05'

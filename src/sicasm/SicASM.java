@@ -239,8 +239,10 @@ public class SicASM {
             } else if (instruction.getOPCode().equalsIgnoreCase("LTORG") || instruction.getOPCode().equalsIgnoreCase("END")) {
                 ObjCode.addElement("");
                 if (allNames.size() > 0) {
-                    for (int i = 0; i < allNames.get(counter).size(); i++) {
-                        ObjCode.addElement(ZeroFormat(Integer.parseInt(LITTABs.get(counter).getValue(allNames.get(counter).get(i), 1), 16), 6));
+                    if (counter < allNames.size()){
+                        for (int i = 0; i < allNames.get(counter).size(); i++) {
+                            ObjCode.addElement(ZeroFormat(Integer.parseInt(LITTABs.get(counter).getValue(allNames.get(counter).get(i), 1), 16), 6));
+                        }
                     }
                 }
                 counter++;
@@ -279,13 +281,15 @@ public class SicASM {
             }
             SRCformat instruction = new SRCformat(lines[i]);
             if (instruction.getOPCode().equalsIgnoreCase("LTORG") || instruction.getOPCode().equalsIgnoreCase("END")) {
-                if (allNames.size() > 0) {
-                    ListFile += Address.get(count).toUpperCase() + '\t' + ObjCode.get(count).toUpperCase() + '\t' + lines[i] + '\n';
+                ListFile += Address.get(count).toUpperCase() + '\t' + ObjCode.get(count).toUpperCase() + '\t' + lines[i] + '\n';
                     count++;
-                    for (int j = 0; j < allNames.get(counter).size(); j++) {
-                        name = allNames.get(counter).get(j);
-                        ListFile += Address.get(count).toUpperCase() + '\t' + ObjCode.get(count).toUpperCase() + "\t*\t=" + LITTABs.get(counter).getValue(name, 0) + '\n';
-                        count++;
+                if (allNames.size() > 0) {
+                    if (counter < allNames.size()){
+                        for (int j = 0; j < allNames.get(counter).size(); j++) {
+                            name = allNames.get(counter).get(j);
+                            ListFile += Address.get(count).toUpperCase() + '\t' + ObjCode.get(count).toUpperCase() + "\t*\t=" + LITTABs.get(counter).getValue(name, 0) + '\n';
+                            count++;
+                        }
                     }
                 }
                 counter++;
@@ -298,6 +302,8 @@ public class SicASM {
     }
 
     private static void ObjProgram(String[] lines) {
+        System.out.println(ObjCode);
+        System.out.println(allNames);
         SRCformat firstIns = new SRCformat(lines[0]);
         String programName;
         if ((firstIns.getLabel()).length() > 6) {
@@ -339,16 +345,19 @@ public class SicASM {
                     break;
                 } else if (recordLength == 60) {
                     i = j;
-                    icount = jcount + 1;
+                    icount = jcount;
                     loop = true;
                     break;
                 } else {
                     if (flag) {
                         if (allNames.size() > 0) {
-                            for (int k = 0; k < allNames.get(counter - 1).size(); k++) {
-                                record += "^" + ObjCode.elementAt(jcount);
-                                recordLength += ObjCode.elementAt(jcount).length();
-                                jcount++;
+                            if (counter - 1 < allNames.size()){
+                                for (int k = 0; k < allNames.get(counter - 1).size(); k++) {
+                                    record += "^" + ObjCode.elementAt(jcount);
+                                    recordLength += ObjCode.elementAt(jcount).length();
+                                    jcount++;
+                                    System.out.println(jcount + ins.getOPCode());
+                                }
                             }
                         }
                         flag = false;
@@ -358,6 +367,7 @@ public class SicASM {
                     loop = false;
                 }
                 jcount++;
+                System.out.println(jcount + ins.getOPCode());
             }
             if (!record.equals("")) {
                 while(Address.elementAt(startAddIndex).equals("")){
@@ -371,14 +381,18 @@ public class SicASM {
         record = "";
         recordLength = 0;
         if (allNames.size() > 0) {
-            jcount++;
-            for (int k = 0; k < allNames.get(counter).size(); k++) {
-                record += "^" + ObjCode.elementAt(jcount);
-                recordLength += ObjCode.elementAt(jcount).length();
+            if (counter < allNames.size()){
                 jcount++;
+                System.out.println(jcount);
+                for (int k = 0; k < allNames.get(counter).size(); k++) {
+                    record += "^" + ObjCode.elementAt(jcount);
+                    recordLength += ObjCode.elementAt(jcount).length();
+                    jcount++;
+                    System.out.println(jcount);
+                }
+                ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.lastElement(), 16), 6)
+                            + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
             }
-            ObjProgram += "T^" + ZeroFormat(Integer.parseInt(Address.lastElement(), 16), 6)
-                        + '^' + ZeroFormat(recordLength / 2, 2) + record + '\n';
         }
         ObjProgram = ObjProgram + "E^" + ZeroFormat(Integer.parseInt(Address.firstElement(), 16), 6);
         ObjProgram = ObjProgram.toUpperCase();

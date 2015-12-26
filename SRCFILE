@@ -10,6 +10,7 @@ BUFF     EQU     LOOP-ALPHA
          JLT     LOOP
          LDX    =c'er'
          LTORG
+         ADD     BUFF
          ORG
          STA    =x'05'
 TABLE    RESW    10
